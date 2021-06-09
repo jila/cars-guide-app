@@ -1,26 +1,20 @@
-import React, { Component} from "react";
+import React from "react";
+import DataGrid from 'react-data-grid';
 
-class Table extends Component {
+
+class Table extends React.Component {
+
+
+
     render() {
+        const columns = [
+            { key: 'id', name: 'ID' },
+            { key: 'title', name: 'Title' },
+            { key: 'count', name: 'Count' } ];
+
+        const rows = [{id: 0, title: 'row1', count: 20}, {id: 1, title: 'row1', count: 40}, {id: 2, title: 'row1', count: 60}];
         return (
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Make</th>
-                    </tr>
-                   <tr>
-                       <th></th>
-                       <th><input type="text" /></th>
-                   </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>ABC123</td>
-                        <td>Mazda</td>
-                    </tr>
-                </tbody>
-            </table>
+            <DataGrid columns={columns} rows={rows} />
         );
     }
 }

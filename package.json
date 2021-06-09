@@ -9,9 +9,12 @@
   "author": "Jila Khaghani",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.21.1",
     "react": "^17.0.2",
+    "react-data-grid": "*",
     "react-dom": "^17.0.2",
-    "react-scripts": "4.0.3",
+    "react-scripts": "^4.0.3",
+    "react-select": "^4.3.1",
     "web-vitals": "^1.1.2"
   },
   "devDependencies": {
@@ -20,11 +23,12 @@
     "@babel/preset-env": "^7.1.0",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.2",
+    "babel-plugin-transform-class-properties": "^6.24.1",
     "bootstrap": "^5.0.1",
     "css-loader": "^1.0.0",
     "style-loader": "^0.23.0",
     "webpack": "^4.19.1",
-    "webpack-cli": "^3.1.1",
+    "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.1.8"
   }
 }
