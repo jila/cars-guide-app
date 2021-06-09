@@ -56,21 +56,16 @@ class TypeAhead extends Component
         });
     };
 
-    handleChange = (newValue, actionMeta) => {
-        console.group('handleChange');
-        console.log(newValue);
-        console.log(`action: ${actionMeta.action}`);
-        console.groupEnd();
-        document.getElementById(this.props.field_id).value = newValue.value;
-        this.setState({ value: newValue });
+    handleChange = (newValue) => {
+        if (newValue) {
+            document.getElementById(this.props.field_id).value = newValue.value;
+            this.setState({value: newValue});
+        } else {
+            document.getElementById(this.props.field_id).value = null;
+            this.setState({value: null});
+        }
     };
 
-    handleInputChange = (inputValue, actionMeta) => {
-        console.group('Input Changed');
-        console.log(inputValue);
-        console.log(`action: ${actionMeta.action}`);
-        console.groupEnd();
-    };
     render() {
         const { isLoading, options, value } = this.state;
 
@@ -79,14 +74,13 @@ class TypeAhead extends Component
                 isClearable
                 isDisabled={isLoading}
                 isLoading={isLoading}
-                onChange={this.handleChange}
+                onChange={this.handleChange.bind(this)}
                 onCreateOption={this.handleCreate.bind(this)}
                 options={options}
                 value={value}
             />
         );
     }
-
 }
 
 export default TypeAhead;
