@@ -21,12 +21,11 @@ class Form extends React.Component
 
         return (
             <div className="container">
-                <form onSubmit={this.saveForm}>
+                <form onSubmit={this.saveForm.bind(this)}>
                     <div className="row">
                         <div className="col">
-                            <label className="form-label">ID
-                                <input type="text" className="form-control" name="id" id="id" placeholder="ID"/>
-                            </label>
+                            <label className="form-label">ID</label>
+                            <input type="text" className="form-control" name="id" id="id" placeholder="ID"/>
                         </div>
                         <div className="col">
                             <label className="form-label">Make</label>
@@ -36,31 +35,39 @@ class Form extends React.Component
                                     field_id={"make_id"}
                                     id={"makes"}
                                     new_option_input_name={"make"}//this sends to the api to create a new record and receive the id
-                                    placeholder={"Make...."}
+                                    placeholder={"Make..."}
                                     get_typeahead_endpoint={'http://127.0.0.1:8000/api/car-make?beautify=1'}
                                     get_newoption_endpoint={"http://127.0.0.1:8000/api/car-make"}
+                                    additional_post_payload={false}
                                 />
-
                         </div>
                     </div>
                     <div className="row">
-                        <div className="col-md-6">
-                            <label className="form-label">Model
-                                <input type="text" className="form-control" name="model" id="model" />
-                            </label>
+                        <div className="col">
+                            <label className="form-label">Model</label>
+                            <input type="hidden" className="form-control" name="model_id" id="model_id" />
+                            <TypeAhead
+                                name={"model_id"}
+                                field_id={"model_id"}
+                                id={"models"}
+                                new_option_input_name={"model"}//this sends to the api to create a new record and receive the id
+                                placeholder={"Model..."}
+                                get_typeahead_endpoint={'http://127.0.0.1:8000/api/car-model?beautify=1'}
+                                get_newoption_endpoint={"http://127.0.0.1:8000/api/car-model"}
+                                additional_post_payload={true}
+                                payload_field_ids={["make_id"]}
+                            />
                         </div>
-                        <div className="col-md-6">
-                            <label className="form-label">Year
+                        <div className="col">
+                            <label className="form-label">Year</label>
                                 <input type="text" className="form-control" name="make" id="make" />
-                            </label>
                         </div>
                         <div className="row">
-                            <div className="col-md-6">
-                                <label className="form-label">Variant
+                            <div className="col">
+                                <label className="form-label">Variant</label>
                                     <input type="text" className="form-control" name="variant" id="variant"  />
-                                </label>
                             </div>
-                            <div className="col-md-6">
+                            <div className="col">
                                 <button type="submit" className="btn btn-primary">Save</button>
                             </div>
                         </div>

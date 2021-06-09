@@ -31,17 +31,32 @@ class TypeAhead extends Component
         const { options } = this.state;
         let newOption;
         let self = this;
+        let data = {};
+
+        data = Object.assign({
+            [this.props.new_option_input_name]: inputValue
+        });
+
+        // payload_field_ids is like:
+        // [
+        // "make_id"
+        // ]
+        if (this.props.additional_post_payload) {
+            const field_ids = this.props.payload_field_ids;
+            // data to post to create a new record will look like
+            // {make_id: "1", model: "elentra"}
+            field_ids.forEach((payload) => data[payload] = document.getElementById(payload).value);
+        }
+
         axios({
             method: 'post',
             url: this.props.get_newoption_endpoint,
-            data: {
-                [this.props.new_option_input_name]: inputValue
-            }
+            data: data
         }).then(function (response)  {
             if (response.data.result === 'success') {
                 newOption = Object.assign({
                     'label': response.data.data.label,
-                    'value': response.data.data.key
+                    'value': response.data.data.value
                 });
 
                 self.setState({
@@ -50,9 +65,17 @@ class TypeAhead extends Component
                     value: newOption,
                 });
                 document.getElementById(self.props.field_id).value = newOption.value;
+
+                // Call the parent method to keep the value in its state
+                self.props.onInputChange(self.state);
             }
         }).catch(function (error) {
-            console.log(error);
+            if (error.response && error.response.status === 400) {
+                self.setState({
+                    isLoading: false,
+                    value: {'label': error.response.data.message, 'value': null}
+                });
+            }
         });
     };
 
@@ -64,6 +87,8 @@ class TypeAhead extends Component
             document.getElementById(this.props.field_id).value = null;
             this.setState({value: null});
         }
+
+        this.props.onInputChange(this.state);
     };
 
     render() {
@@ -78,6 +103,7 @@ class TypeAhead extends Component
                 onCreateOption={this.handleCreate.bind(this)}
                 options={options}
                 value={value}
+                placeholder={this.props.placeholder}
             />
         );
     }
