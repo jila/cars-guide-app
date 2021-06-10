@@ -11,7 +11,12 @@ class App extends Component{
     render(){
         return(
             <div className="container">
-                <Form />
+                <div className="row">
+                    <Form />
+                </div>
+                <div className="row">
+                    <Table />
+                </div>
             </div>
         );
     }
