@@ -13,7 +13,7 @@ class TypeAhead extends Component
         this.state = {
             isLoading: false,
             options: [],// set them later in getOptions
-            value: undefined,
+            value: undefined
         };
 
         this.getOptions(this);

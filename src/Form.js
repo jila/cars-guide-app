@@ -24,7 +24,7 @@ class Form extends React.Component
             method: 'post',
             url: url,
             data: this.state
-       }).then(function (response)  {
+        }).then(function (response)  {
             self.setState({});
             event.target.reset();
             //ReactDOM.unmountComponentAtNode(document.getElementById("make_id"));
