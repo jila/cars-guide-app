@@ -3,6 +3,8 @@ import CreatableSelect from 'react-select/creatable';
 
 const axios = require('axios');
 
+// This component creates an input box whit the list of the available options
+// if the option doesn't exist
 class TypeAhead extends Component
 {
     constructor(props, context) {
@@ -19,6 +21,7 @@ class TypeAhead extends Component
 
     getOptions (self)
     {
+        //TODO: call this method when user stop writing, then call the API to get optimized result
         axios.get(this.props.get_typeahead_endpoint).then(function (response) {
             self.setState({options: response.data});
         });
@@ -67,7 +70,7 @@ class TypeAhead extends Component
                 document.getElementById(self.props.field_id).value = newOption.value;
 
                 // Call the parent method to keep the value in its state
-                self.props.onInputChange(self.state);
+                self.props.onInputChange(newOption, self.props.name);
             }
         }).catch(function (error) {
             if (error.response && error.response.status === 400) {
@@ -83,12 +86,12 @@ class TypeAhead extends Component
         if (newValue) {
             document.getElementById(this.props.field_id).value = newValue.value;
             this.setState({value: newValue});
+            this.props.onInputChange(newValue, this.props.name);
         } else {
             document.getElementById(this.props.field_id).value = null;
             this.setState({value: null});
+            this.props.onInputChange({value: null}, this.props.name);
         }
-
-        this.props.onInputChange(this.state);
     };
 
     render() {
