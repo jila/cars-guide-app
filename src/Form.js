@@ -1,5 +1,6 @@
 import React from "react";
 import TypeAhead from "./TypeAhead";
+import ReactDOM from "react-dom";
 const axios = require('axios');
 
 class Form extends React.Component
@@ -16,14 +17,17 @@ class Form extends React.Component
 
     saveForm(event) {
         event.preventDefault();
+        const url = 'http://127.0.0.1:8000/api/car';
+        const self = this;
 
-        console.log();
         axios({
             method: 'post',
-            url: 'http://127.0.0.1:8000/car',
+            url: url,
             data: this.state
-        }).then(function (response)  {
-
+       }).then(function (response)  {
+            self.setState({});
+            event.target.reset();
+            //ReactDOM.unmountComponentAtNode(document.getElementById("make_id"));
         }).catch(function (error) {
             if (error.response && error.response.status === 400) {
                 alert(error.response.data.message);
@@ -41,7 +45,6 @@ class Form extends React.Component
     // This callback, get called from TypeAhead component to keep the value of make and model
     onInputChange(inputValue, fieldName)
     {
-        console.log(inputValue);
         this.setState({
             [fieldName]: inputValue.value
         });
