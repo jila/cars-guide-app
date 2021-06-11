@@ -2,6 +2,7 @@ import React from "react";
 import TypeAhead from "./TypeAhead";
 import ReactDOM from "react-dom";
 const axios = require('axios');
+const { REACT_APP_CARES_GUIDE_API } = process.env;
 
 class Form extends React.Component
 {
@@ -17,7 +18,7 @@ class Form extends React.Component
 
     saveForm(event) {
         event.preventDefault();
-        const url = 'http://127.0.0.1:8000/api/car';
+        const url = process.env.REACT_APP_CARES_GUIDE_API+'/car';
         const self = this;
 
         axios({
@@ -52,25 +53,30 @@ class Form extends React.Component
 
     render() {
 
+        //TODO: Fix the issue of car_model type ahead. when the value of the car_make changes it does not change the
+        // options of the car_mode accordingly
+
         return (
             <div className="container">
                 <form onSubmit={this.saveForm.bind(this)} >
                     <div className="row">
                         <div className="col">
                             <label className="form-label">ID</label>
-                            <input type="text" className="form-control" name="id" id="id" placeholder="ID" onChange={this.handleChange}/>
+                            <input type="text" className="form-control" name="id" id="id" placeholder="ID"
+                                   onChange={this.handleChange}/>
                         </div>
                         <div className="col">
                             <label className="form-label">Make</label>
-                                <input type="hidden" className="form-control" name="make_id" id="make_id" onChange={this.handleChange} />
+                                <input type="hidden" className="form-control" name="make_id" id="make_id"
+                                       onChange={this.handleChange} />
                                 <TypeAhead
                                     name={"make_id"}
                                     field_id={"make_id"}
                                     id={"makes"}
                                     new_option_input_name={"make"}//this sends to the api to create a new record and receive the id
                                     placeholder={"Make..."}
-                                    get_typeahead_endpoint={'http://127.0.0.1:8000/api/car-make?beautify=1'}
-                                    get_newoption_endpoint={"http://127.0.0.1:8000/api/car-make"}
+                                    get_typeahead_endpoint={REACT_APP_CARES_GUIDE_API+'/car-make'}
+                                    get_newoption_endpoint={REACT_APP_CARES_GUIDE_API+"/car-make"}
                                     additional_post_payload={false}
                                     onInputChange={this.onInputChange}
                                 />
@@ -86,8 +92,8 @@ class Form extends React.Component
                                 id={"models"}
                                 new_option_input_name={"model"}//this sends to the api to create a new record and receive the id
                                 placeholder={"Model..."}
-                                get_typeahead_endpoint={'http://127.0.0.1:8000/api/car-model?beautify=1'}
-                                get_newoption_endpoint={"http://127.0.0.1:8000/api/car-model"}
+                                get_typeahead_endpoint={REACT_APP_CARES_GUIDE_API+'/car-model?beautify=1'}
+                                get_newoption_endpoint={REACT_APP_CARES_GUIDE_API+'/car-model'}
                                 additional_post_payload={true}
                                 payload_field_ids={["make_id"]}
                                 onInputChange={this.onInputChange}

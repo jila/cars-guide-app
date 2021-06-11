@@ -36,7 +36,7 @@ class Table extends React.Component {
 
     createRows() {
         const rows = [];
-        const url = 'http://127.0.0.1:8000/api/car';
+        const url = process.env.REACT_APP_CARES_GUIDE_API+'/car';
         let temp = [];
 
         axios({
