@@ -7,31 +7,31 @@ class Table extends React.Component {
 
     constructor(props) {
         super(props);
-    }
-
-    getColumns() {
-       return [
-            {
-                key: 'id',
-                name: 'ID'
-            },
-            {
-                key: 'car_make',
-                name: 'Make'
-            },
-            {
-                key: 'car_model',
-                name: 'Model'
-            },
-            {
-                key: 'year',
-                name: 'Year'
-            },
-            {
-                key: 'variant',
-                name: 'Variant'
-            }
-        ];
+        this.state = {
+            rows: this.createRows(),
+            columns: [
+                {
+                    key: 'id',
+                    name: 'ID'
+                },
+                {
+                    key: 'car_make',
+                    name: 'Make'
+                },
+                {
+                    key: 'car_model',
+                    name: 'Model'
+                },
+                {
+                    key: 'year',
+                    name: 'Year'
+                },
+                {
+                    key: 'variant',
+                    name: 'Variant'
+                }
+            ]
+        };
     }
 
     createRows() {
@@ -43,8 +43,6 @@ class Table extends React.Component {
             method: 'get',
             url: url,
         }).then(function (response)  {
-            // Add an arbitrary column to the data returned
-            // from the server to show the row number.
             for (let j = 0; j < response.data.rows.length; j++) {
                 temp = Object.assign({
                     "id": response.data.rows[j].id,
@@ -61,17 +59,12 @@ class Table extends React.Component {
             }
         });
 
-        this.setState({
-            'rows': rows
-        })
         return rows;
     }
 
     render() {
-        const rows = this.createRows();
-        const columns = this.getColumns();
         return (
-            <DataGrid columns={columns} rows={rows} />
+            <DataGrid columns={this.state.columns} rowsCount={this.state.rows.length} rows={this.state.rows} />
         );
     }
 }
