@@ -9,104 +9,33 @@ class TypeAhead extends Component
 {
     constructor(props, context) {
         super(props, context);
-
-        this.state = {
-            isLoading: false,
-            options: [],// set them later in getOptions
-            value: undefined
-        };
-
-        this.getOptions(this);
     }
 
-    getOptions (self)
-    {
-        //TODO: call this method when user stop writing, then call the API to get optimized result
-        axios.get(this.props.get_typeahead_endpoint).then(function (response) {
-            self.setState({options: response.data});
-        });
-
+    getOptions () {
+        return this.props.getOptions(this.props.name, this.props.get_typeahead_endpoint);
     }
 
     handleCreate(inputValue) {
-        // This method sends a request to the API to create a new record and receive the newly creates
-        this.setState({ isLoading: true });
-        const { options } = this.state;
-        let newOption;
-        let self = this;
-        let data = {};
+        this.props.handleCreate(this.props.name, inputValue, this.props.additional_post_payload, this.props.updateOtherComponentOnChange);
 
-        data = Object.assign({
-            [this.props.new_option_input_name]: inputValue
-        });
-
-        // payload_field_ids is like:
-        // [
-        // "make_id"
-        // ]
-        if (this.props.additional_post_payload) {
-            const field_ids = this.props.payload_field_ids;
-            // data to post to create a new record will look like
-            // {make_id: "1", model: "elentra"}
-            field_ids.forEach((payload) => data[payload] = document.getElementById(payload).value);
-        }
-
-        axios({
-            method: 'post',
-            url: this.props.get_newoption_endpoint,
-            data: data
-        }).then(function (response)  {
-            if (response.data.result === 'success') {
-                newOption = Object.assign({
-                    'label': response.data.data.label,
-                    'value': response.data.data.value
-                });
-
-                self.setState({
-                    isLoading: false,
-                    options: [...options, newOption],
-                    value: newOption,
-                });
-                document.getElementById(self.props.field_id).value = newOption.value;
-
-                // Call the parent method to keep the value in its state
-                self.props.onInputChange(newOption, self.props.name);
-            }
-        }).catch(function (error) {
-            if (error.response && error.response.status === 400) {
-                self.setState({
-                    isLoading: false,
-                    value: {'label': error.response.data.message, 'value': null}
-                });
-            }
-        });
     };
 
     handleChange = (newValue) => {
-        if (newValue) {
-            document.getElementById(this.props.field_id).value = newValue.value;
-            this.setState({value: newValue});
-            this.props.onInputChange(newValue, this.props.name);
-        } else {
-            document.getElementById(this.props.field_id).value = null;
-            this.setState({value: null});
-            this.props.onInputChange({value: null}, this.props.name);
-        }
+        this.props.onChange(newValue, this.props.name, this.props.updateOtherComponentOnChange);
     };
 
     render() {
-        const { isLoading, options, value } = this.state;
 
         return (
             <CreatableSelect
                 isClearable
-                isDisabled={isLoading}
-                isLoading={isLoading}
+                isDisabled={this.props.isLoading}
                 onChange={this.handleChange.bind(this)}
                 onCreateOption={this.handleCreate.bind(this)}
-                options={options}
-                value={value}
                 placeholder={this.props.placeholder}
+                options={this.props.options}
+                isLoading={this.props.isLoading}
+                value={this.props.value}
             />
         );
     }

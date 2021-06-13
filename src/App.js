@@ -7,7 +7,6 @@ const axios = require('axios');
 class App extends Component {
     constructor(props) {
         super(props);
-        this.state = {};
 
         this.saveForm = this.saveForm.bind(this);
         this.handleFormInputChange = this.handleFormInputChange.bind(this);
@@ -36,7 +35,6 @@ class App extends Component {
 
     // This method get called when html inputs get changed
     handleFormInputChange(event) {
-        console.log(event);
         this.setState({
             [event.target.name]: event.target.value
         });
@@ -47,6 +45,8 @@ class App extends Component {
             [fieldName]: inputValue.value
         });
     }
+
+
 
     render(){
         return(
