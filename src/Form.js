@@ -1,7 +1,7 @@
 import React from "react";
 import TypeAhead from "./TypeAhead";
 import ReactDOM from "react-dom";
-const axios = require('axios');
+
 const { REACT_APP_CARES_GUIDE_API } = process.env;
 
 class Form extends React.Component
@@ -11,44 +11,24 @@ class Form extends React.Component
         super(props);
 
         // This binding is necessary to make `this` work in the callback
-        this.handleClick = this.saveForm.bind(this);
+        this.saveForm = this.saveForm.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.onInputChange = this.onInputChange.bind(this);
     }
 
     saveForm(event) {
-        event.preventDefault();
-        const url = process.env.REACT_APP_CARES_GUIDE_API+'/car';
-        const self = this;
-
-        axios({
-            method: 'post',
-            url: url,
-            data: this.state
-        }).then(function (response)  {
-            self.setState({});
-            event.target.reset();
-            //ReactDOM.unmountComponentAtNode(document.getElementById("make_id"));
-        }).catch(function (error) {
-            if (error.response && error.response.status === 400) {
-                alert(error.response.data.message);
-            }
-        });
+        this.props.saveForm(event);
     }
 
     // This method get called when html inputs get changed
     handleChange(event) {
-        this.setState({
-            [event.target.name]: event.target.value
-        })
+        this.props.handleChange(event);
     }
 
     // This callback, get called from TypeAhead component to keep the value of make and model
     onInputChange(inputValue, fieldName)
     {
-        this.setState({
-            [fieldName]: inputValue.value
-        });
+        this.props.onInputChange(inputValue, fieldName);
     }
 
     render() {
@@ -58,7 +38,7 @@ class Form extends React.Component
 
         return (
             <div className="container">
-                <form onSubmit={this.saveForm.bind(this)} >
+                <form onSubmit={this.saveForm} >
                     <div className="row">
                         <div className="col">
                             <label className="form-label">ID</label>
