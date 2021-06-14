@@ -21,7 +21,7 @@ class TypeAhead extends Component
     };
 
     handleChange = (newValue) => {
-        this.props.onChange(newValue, this.props.name, this.props.updateOtherComponentOnChange);
+        this.props.onChange(this.props.name, newValue, this.props.updateOtherComponentOnChange);
     };
 
     render() {

@@ -41,8 +41,9 @@ class App extends Component {
     }
 
     handleFormTypeAheadInputChange(inputValue, fieldName) {
+        const value = (inputValue) ? inputValue.value : null;
         this.setState({
-            [fieldName]: inputValue.value
+            [fieldName]: value
         });
     }
 

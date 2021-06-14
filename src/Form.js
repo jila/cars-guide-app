@@ -48,23 +48,23 @@ class Form extends React.Component
         this.props.onInputChange(inputValue, fieldName);
     }
 
+    /** TypeAhead component methods **/
     // This method sends a request to API to ge the available options
     // depending on the field
     // for car make it will receive all the car makes
-    // for car model it has to sends the car_make (payload) to fetch the correct models
-    getOptions(fieldName, url, payload = null) {
-        console.log("getOptions");
+    // for car model it has to sends the car_make (params) to fetch the correct models
+    getOptions(fieldName, url, params = {}) {
         let self = this;
         //TODO: call this method when user stop writing, then call the API to get optimized result
 
-        // if payload is available provide the value as data to the request
+        // if data is available provide the value as data to the request
         // payload is make_id
+        // to get the lis of correct models, pass the make_id
         let data = {};
-        // if (payload) {
-        //     data = {
-        //         [payload]: this.state[payload].value
-        //     }
-        // }
+        if (params) {
+            // TODO: change to get multiple payload
+            data = {params: params};
+        }
 
         axios.get(url, data).then(function (response) {
             self.setState(prevState => ({
@@ -78,12 +78,13 @@ class Form extends React.Component
 
     // This is when an option is selected in make_id or model_id
     handleTypeAheadChange(fieldName, newValue, updateOtherComponentOnChange) {
-        console.log("handleTypeAheadChange");
-        const value = (newValue) ? newValue : null;
+        const value = (newValue) ? newValue.value : null;
+        const valueOption = (newValue) ? newValue : null; // this must be in {label:"label", value:"value"} format
+
         this.setState(prevState => ({
             [fieldName]: {                   // object that we want to update
                 ...prevState[fieldName],    // keep all other key-value pairs
-                value: value               // update the value of specific key
+                value: valueOption               // update the value of specific key
             }
         }));
 
@@ -91,10 +92,22 @@ class Form extends React.Component
 
         // when a car_make is selected, car model has to show correct data
         if (updateOtherComponentOnChange.length > 0) {
-            // input.field_name => model_id
-            // input.url
-            // fieldName => make_id to get the value from the state
-            updateOtherComponentOnChange.forEach(input => this.getOptions(input.field_name, input.url , fieldName));
+            if (value !== null) {
+                // input.field_name => model_id
+                // input.url url to get model
+                // fieldName => make_id
+                updateOtherComponentOnChange.forEach(input => this.getOptions(input.field_name, input.url, {[fieldName]: value}));
+            } else {
+                updateOtherComponentOnChange.forEach(input => {
+                    this.setState(prevState => ({
+                        [input.field_name]: {                   // object that we want to update
+                            ...prevState[input.field_name],    // keep all other key-value pairs
+                            options: [],
+                            value: ''               // update the value of specific key
+                        }
+                    }));
+                });
+            }
         }
     }
 
@@ -203,7 +216,25 @@ class Form extends React.Component
                         <div className="col">
                             <label className="form-label">Model</label>
                             <input type="hidden" className="form-control" name="model_id" id="model_id" />
-                            N
+                            <TypeAhead
+                                name={"model_id"}
+                                field_id={"model_id"}
+                                id={"models"}
+                                new_option_input_name={"model"}//this sends to the api to create a new record and receive the id
+                                placeholder={"Model..."}
+                                get_typeahead_endpoint={REACT_APP_CARES_GUIDE_API+'/car-model'}
+                                get_newoption_endpoint={REACT_APP_CARES_GUIDE_API+'/car-model'}
+                                additional_post_payload={true}
+                                payload_field_ids={["make_id"]}
+                                onInputChange={this.onInputChange}
+
+                                options={model_options}
+                                isLoading={this.state.model_id.isLoading}
+                                value={this.state.model_id.value}
+                                onChange={this.handleTypeAheadChange}
+                                onCreateOption={this.onCreateOption}
+                                updateOtherComponentOnChange={[]}
+                            />
                         </div>
                         <div className="col">
                             <label className="form-label">Year</label>
@@ -233,22 +264,3 @@ class Form extends React.Component
 }
 export default Form;
 
-// <TypeAhead
-//     name={"model_id"}
-//     field_id={"model_id"}
-//     id={"models"}
-//     new_option_input_name={"model"}//this sends to the api to create a new record and receive the id
-//     placeholder={"Model..."}
-//     get_typeahead_endpoint={REACT_APP_CARES_GUIDE_API+'/car-model'}
-//     get_newoption_endpoint={REACT_APP_CARES_GUIDE_API+'/car-model'}
-//     additional_post_payload={true}
-//     payload_field_ids={["make_id"]}
-//     onInputChange={this.onInputChange}
-//
-//     options={model_options}
-//     isLoading={this.state.model_id.isLoading}
-//     value={this.state.model_id.value}
-//     onChange={this.handleTypeAheadChange}
-//     onCreateOption={this.onCreateOption}
-//     updateOtherComponentOnChange={[]}
-// />
