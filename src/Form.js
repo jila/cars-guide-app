@@ -220,8 +220,6 @@ class Form extends React.Component
                         </div>
                         <div className="col">
                             <label className="form-label">Make</label>
-                            <input type="hidden" className="form-control" name="make_id" id="make_id"
-                                   onChange={this.handleChange} />
                             <TypeAhead
                                 name={"make_id"}
                                 field_id={"make_id"}
@@ -245,7 +243,6 @@ class Form extends React.Component
                     <div className="row">
                         <div className="col">
                             <label className="form-label">Model</label>
-                            <input type="hidden" className="form-control" name="model_id" id="model_id" />
                             <TypeAhead
                                 name={"model_id"}
                                 field_id={"model_id"}
