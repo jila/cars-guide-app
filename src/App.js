@@ -76,6 +76,9 @@ class App extends Component {
             url: url,
             data: this.state
         }).then(function (response)  {
+            const row = response.data.new_car;
+            const { rows } = self.state
+            self.setState({rows: [...rows, row]});
             event.target.reset();
         }).catch(function (error) {
             if (error.response && error.response.status === 400) {
