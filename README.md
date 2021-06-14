@@ -11,9 +11,6 @@ Run the following commands:
 
 - Unfinished, work in progress :(
 - - The layout style needs to be improved
-  - The TypeAhead components do not get updated when the form is submitted
-  - The TypeAhead component for CarModel should get updated when CarMake is changed
-  - The table needs to get updated when a new record is added
   - The table needs to have sort, filter, pagination
   - Edit a record needs to be implemented
   - Table only shows the results when the scroll moves!
