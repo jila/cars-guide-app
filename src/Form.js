@@ -214,7 +214,9 @@ class Form extends React.Component
                         <div className="col">
                             <label className="form-label">ID</label>
                             <input type="text" className="form-control" name="id" id="id" placeholder="ID"
-                                   onChange={this.handleChange}/>
+                                   onChange={this.handleChange}
+                                   value={this.props.state.id}
+                            />
                         </div>
                         <div className="col">
                             <label className="form-label">Make</label>

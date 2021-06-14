@@ -30,12 +30,18 @@ class App extends Component {
                     key: 'variant',
                     name: 'Variant'
                 }
-            ]
+            ],
+            id: undefined,
+            make_id: undefined,
+            model_id: undefined,
+            variant: undefined,
+            year: undefined
         };
 
         this.saveForm = this.saveForm.bind(this);
         this.handleFormInputChange = this.handleFormInputChange.bind(this);
         this.handleFormTypeAheadInputChange = this.handleFormTypeAheadInputChange.bind(this);
+        this.onRowClick = this.onRowClick.bind(this);
     }
 
     createRows() {
@@ -79,6 +85,9 @@ class App extends Component {
             const row = response.data.new_car;
             const { rows } = self.state
             self.setState({rows: [...rows, row]});
+
+            self.setState({id: undefined, make_id: undefined, model_id: undefined, variant: undefined, year: undefined});
+
             event.target.reset();
         }).catch(function (error) {
             if (error.response && error.response.status === 400) {
@@ -100,6 +109,9 @@ class App extends Component {
         });
     }
 
+    onRowClick(rowIdx, row, column) {
+        //this.setState({id: row.id})
+    }
 
 
     render(){
@@ -109,10 +121,15 @@ class App extends Component {
                     <Form saveForm={this.saveForm}
                           handleChange={this.handleFormInputChange}
                           onInputChange={this.handleFormTypeAheadInputChange}
+                          state={this.state}
                     />
                 </div>
                 <div className="row">
-                    <Table rows={this.state.rows} columns={this.state.columns}/>
+                    <Table
+                        rows={this.state.rows}
+                        columns={this.state.columns}
+                        onRowClick={this.onRowClick}
+                    />
                 </div>
             </div>
         );

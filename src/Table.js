@@ -10,7 +10,12 @@ class Table extends React.Component {
 
     render() {
         return (
-            <DataGrid columns={this.props.columns} rowsCount={this.props.rows.length} rows={this.props.rows} />
+            <DataGrid
+                columns={this.props.columns}
+                rowsCount={this.props.rows.length}
+                rows={this.props.rows}
+                onRowClick={this.props.onRowClick}
+            />
         );
     }
 }
