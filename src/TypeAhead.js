@@ -16,7 +16,13 @@ class TypeAhead extends Component
     }
 
     handleCreate(inputValue) {
-        this.props.handleCreate(this.props.name, inputValue, this.props.additional_post_payload, this.props.updateOtherComponentOnChange);
+        this.props.onCreateOption(this.props.name,
+            inputValue,
+            this.props.new_option_input_name,
+            this.props.get_newoption_endpoint,
+            this.props.payload_field_ids,
+            this.props.updateOtherComponentOnChange
+        );
 
     };
 

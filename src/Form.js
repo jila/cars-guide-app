@@ -36,6 +36,21 @@ class Form extends React.Component
 
     saveForm(event) {
         this.props.saveForm(event);
+
+        // empty the state to update the TypeAhead components
+        // setting an initial variable to be used in both constructor and here didn't work
+        this.setState(prevState => ({
+            make_id: {
+                isLoading: false,
+                options: this.getOptions('make_id', REACT_APP_CARES_GUIDE_API+'/car-make'),
+                value: ''
+            },
+            model_id: {
+                isLoading: false,
+                options: [],
+                value: ''
+            },
+        }));
     }
 
     // This method get called when html inputs get changed
@@ -111,38 +126,38 @@ class Form extends React.Component
         }
     }
 
-    onCreateOption(fieldName, inputValue, payload = false, updateOtherComponentOnChange = []) {
-        console.log("onCreateOption");
-        // This method sends a request to the API to create a new record and receive the newly creates
+    // This method sends a request to the API to create a new record and receive the newly created record
+    onCreateOption(fieldName, inputValue, newOptionInputName, url, payloadFieldId, updateOtherComponentOnChange = []) {
+
         this.setState(prevState => ({
             [fieldName]: {                   // object that we want to update
                 ...prevState[fieldName],    // keep all other key-value pairs
                 isLoading: true               // update the value of specific key
             }
         }));
-        const { options } = this.state[fieldName].options;
+
         let newOption;
         let self = this;
         let data = {};
 
         data = Object.assign({
-            [fieldName]: inputValue
+            [newOptionInputName]: inputValue
         });
 
         // payload_field_ids is like:
         // [
         // "make_id"
         // ]
-        if (payload) {
-            const field_ids = this.props.payload_field_ids;
+        // to make a new model a make_id is required
+        if (payloadFieldId.length > 0) {
             // data to post to create a new record will look like
             // {make_id: "1", model: "elentra"}
-            field_ids.forEach((payload) => data[payload] = this.state[payload].value);
+            payloadFieldId.forEach((payload) => data[payload] = this.state[payload].value.value);
         }
 
         axios({
             method: 'post',
-            url: this.props.get_newoption_endpoint,
+            url: url,
             data: data
         }).then(function (response)  {
             if (response.data.result === 'success') {
@@ -151,37 +166,50 @@ class Form extends React.Component
                     'value': response.data.data.value
                 });
 
-                self.setState(prevState => ({
+                self.setState((prevState) => ({
                     [fieldName]: {                   // object that we want to update
                         isLoading: false,
-                        options: [...options, newOption],
+                        options: prevState[fieldName].options.concat(newOption),
                         value: newOption
                     }
                 }));
 
                 // Call the parent method to keep the value in its state
-                self.props.onInputChange(newOption, self.props.name);
+                self.props.onInputChange(newOption.value, fieldName);
+
+                // when a new make is created, remove model options
+                if (updateOtherComponentOnChange.length > 0) {
+                    updateOtherComponentOnChange.forEach(input => {
+                        this.setState(prevState => ({
+                            [input.field_name]: {                   // object that we want to update
+                                ...prevState[input.field_name],    // keep all other key-value pairs
+                                options: [],
+                                value: ''               // update the value of specific key
+                            }
+                        }));
+                    });
+                }
             }
         }).catch(function (error) {
             if (error.response && error.response.status === 400) {
-                self.setState({
-                    isLoading: false,
-                    value: {'label': error.response.data.message, 'value': null}
-                });
+                self.setState(prevState => ({
+                    [fieldName]: {                   // object that we want to update
+                        ...prevState[fieldName],    // keep all other key-value pairs
+                        isLoading: false,
+                        value: {'label': error.response.data.message, 'value': null}               // update the value of specific key
+                    }
+                }));
             }
         });
     }
 
     render() {
 
-        //TODO: Fix the issue of car_model type ahead. when the value of the car_make changes it does not change the
-        // options of the car_mode accordingly
         const make_options = this.state.make_id.options;
         const model_options = this.state.model_id.options;
 
         return (
-            <div className="container">
-                <form onSubmit={this.saveForm} >
+                <form  onSubmit={this.saveForm} >
                     <div className="row">
                         <div className="col">
                             <label className="form-label">ID</label>
@@ -200,7 +228,6 @@ class Form extends React.Component
                                 placeholder={"Make..."}
                                 get_typeahead_endpoint={REACT_APP_CARES_GUIDE_API+'/car-make'}// the get url to fetch all the options
                                 get_newoption_endpoint={REACT_APP_CARES_GUIDE_API+"/car-make"}// the post url to create a new make
-                                additional_post_payload={false}
                                 onInputChange={this.onInputChange}
 
                                 options={make_options}
@@ -209,6 +236,7 @@ class Form extends React.Component
                                 onChange={this.handleTypeAheadChange}
                                 onCreateOption={this.onCreateOption}
                                 updateOtherComponentOnChange={[{field_name: "model_id", url: REACT_APP_CARES_GUIDE_API+'/car-model'}]}
+                                payload_field_ids={[]}
                             />
                         </div>
                     </div>
@@ -224,8 +252,6 @@ class Form extends React.Component
                                 placeholder={"Model..."}
                                 get_typeahead_endpoint={REACT_APP_CARES_GUIDE_API+'/car-model'}
                                 get_newoption_endpoint={REACT_APP_CARES_GUIDE_API+'/car-model'}
-                                additional_post_payload={true}
-                                payload_field_ids={["make_id"]}
                                 onInputChange={this.onInputChange}
 
                                 options={model_options}
@@ -234,6 +260,7 @@ class Form extends React.Component
                                 onChange={this.handleTypeAheadChange}
                                 onCreateOption={this.onCreateOption}
                                 updateOtherComponentOnChange={[]}
+                                payload_field_ids={["make_id"]}
                             />
                         </div>
                         <div className="col">
@@ -246,19 +273,17 @@ class Form extends React.Component
                                    id="year"
                                    onChange={this.handleChange} />
                         </div>
-                        <div className="row">
-                            <div className="col">
-                                <label className="form-label">Variant</label>
-                                <input type="text" className="form-control" name="variant" id="variant" onChange={this.handleChange} />
-                            </div>
-                            <div className="col">
-                                <button type="submit" className="btn btn-primary">Save</button>
-                            </div>
+                    </div>
+                    <div className="row">
+                        <div className="col">
+                            <label className="form-label">Variant</label>
+                            <input type="text" className="form-control" name="variant" id="variant" onChange={this.handleChange} />
+                        </div>
+                        <div className="col">
+                            <button type="submit" className="btn btn-primary">Save</button>
                         </div>
                     </div>
-
                 </form>
-            </div>
         );
     }
 }
